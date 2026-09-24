@@ -1,10 +1,15 @@
 export const messages = {
   tripCreated: '旅行计划已创建',
   tripDeleted: '旅行计划已删除',
-  spotAdded: '景点已加入当天行程',
+  spotAdded: '景点已按可行时段加入当天行程',
+  pendingStaged: '暂时排不进去，已放入待排区并标明卡点',
+  pendingConfirmed: '已按调整方案放入当天行程',
+  pendingRemoved: '已移出待排区',
+  pendingStillBlocked: '仍排不进去，卡点已更新',
+  pendingNoSuggestion: '当天没有可调整的可行时段，可改天、缩短停留或先移出其他景点',
+  movedToPending: (count: number) => `${count} 项改序后撞车，已移入待排区`,
   emptyTrips: '还没有旅行计划，先创建一次出发。',
   emptySpots: '没有符合条件的景点。',
   budgetExceeded: '预算可能超支，请调整景点或交通方式',
   storageRecovered: '本地数据已恢复',
 };
-

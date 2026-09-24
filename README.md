@@ -14,10 +14,11 @@ TripWeaver 是一款纯前端旅行规划应用，支持创建旅行、探索景
 ## 主要功能
 
 - 我的旅行：创建、筛选、删除旅行计划。
-- 行程详情：查看每日行程、预算图表和共享时间线。
-- 景点探索：按 SpotCategory 搜索和筛选，收藏并加入行程。
-- 行程编排：SortableJS 拖拽排序，实时影响预算计算。
-- 分享预览：生成可复制的行程文本。
+- 行程详情：查看每日行程、预算图表、当天金额和待排区卡点。
+- 景点探索：按 SpotCategory 搜索和筛选，收藏；收录景点时按开放时刻和交通方式实时预览可行时段。
+- 可解释排程：撞车、闭馆或超出当天可支配金额的景点留在待排区，标明卡在哪个条件，确认调整方案后才放进当天。
+- 行程编排：SortableJS 拖拽排序，改序后自动重检，撞车的项移回待排区。
+- 分享预览：与详情、编排页展示同一份顺序与金额，生成可复制的行程文本。
 
 ## 技术栈
 
@@ -50,7 +51,9 @@ src/
 
 ## 数据持久化
 
-本地数据通过 `utils/storage.ts` 统一写入 localStorage，并保留 Dexie 数据库对象用于后续 IndexedDB 扩展。版本键来自 `constants/storageVersion.ts`。
+本地数据通过 `utils/storage.ts` 统一写入 localStorage，并保留 Dexie 数据库对象用于后续 IndexedDB 扩展。版本键来自 `constants/storageVersion.ts`。已确认的每日行程存于 `dayPlans` 键，待排项及其卡点、调整方案存于 `pendingItems` 键（`api/pendingApi.ts`），重开浏览器后两者都会恢复。
+
+排程规则（开放时刻解析、交通耗时、可行时段求解、卡点解释）集中在 `utils/scheduler.ts` 与 `constants/schedule.ts`，为纯函数；编排动作（收录、确认、改序重检）在 `stores/scheduleStore.ts`，页面只消费 store，三者分离。
 
 ## 环境变量
 

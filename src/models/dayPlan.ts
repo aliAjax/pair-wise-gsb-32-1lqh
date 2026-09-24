@@ -1,9 +1,11 @@
+export type TransportMode = 'walk' | 'metro' | 'taxi' | 'train';
+
 export interface DayPlanItem {
   spot_id: string;
   start_time: string;
   end_time: string;
   note: string;
-  transport: 'walk' | 'metro' | 'taxi' | 'train';
+  transport: TransportMode;
 }
 
 export interface DayPlan {
@@ -13,4 +15,3 @@ export interface DayPlan {
   date: string;
   items: DayPlanItem[];
 }
-
