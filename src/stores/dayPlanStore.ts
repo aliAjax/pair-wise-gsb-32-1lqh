@@ -1,8 +1,6 @@
 import { defineStore } from 'pinia';
 import type { DayPlan, DayPlanItem } from '../models/dayPlan';
 import { dayPlanApi } from '../api/dayPlanApi';
-import { messages } from '../constants/messages';
-import { toast } from '../utils/message';
 
 export const useDayPlanStore = defineStore('dayPlan', {
   state: () => ({ dayPlans: dayPlanApi.list() as DayPlan[] }),
@@ -15,12 +13,19 @@ export const useDayPlanStore = defineStore('dayPlan', {
       }
       return day;
     },
-    addSpot(tripId: string, spotId: string, dayIndex = 1) {
+    /** 按已确认方案把条目追加到当天末尾 */
+    insertItem(tripId: string, dayIndex: number, item: DayPlanItem) {
       const day = this.ensureDay(tripId, dayIndex);
-      const item: DayPlanItem = { spot_id: spotId, start_time: '10:00', end_time: '12:00', note: '现场调整', transport: 'metro' };
       day.items.push(item);
       dayPlanApi.save(this.dayPlans);
-      toast.ok(messages.spotAdded);
+    },
+    removeItem(tripId: string, dayIndex: number, spotId: string) {
+      const day = this.dayPlans.find((item) => item.trip_id === tripId && item.day_index === dayIndex);
+      if (!day) return undefined;
+      const index = day.items.findIndex((item) => item.spot_id === spotId);
+      const [removed] = index >= 0 ? day.items.splice(index, 1) : [];
+      dayPlanApi.save(this.dayPlans);
+      return removed;
     },
     reorder(tripId: string, dayIndex: number, from: number, to: number) {
       const day = this.ensureDay(tripId, dayIndex);
@@ -30,4 +35,3 @@ export const useDayPlanStore = defineStore('dayPlan', {
     },
   },
 });
-

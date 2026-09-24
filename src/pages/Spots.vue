@@ -14,17 +14,24 @@
 <script setup lang="ts">
 import { useTripStore } from '../stores/tripStore';
 import { useSpotStore } from '../stores/spotStore';
-import { useDayPlanStore } from '../stores/dayPlanStore';
+import { useScheduleStore } from '../stores/scheduleStore';
+import { messages } from '../constants/messages';
+import { toast } from '../utils/message';
 import CategoryFilter from '../components/common/CategoryFilter.vue';
 import SpotCard from '../components/common/SpotCard.vue';
 import EmptyState from '../components/common/EmptyState.vue';
-import { messages } from '../constants/messages';
 const tripStore = useTripStore();
 const spotStore = useSpotStore();
-const dayPlanStore = useDayPlanStore();
+const scheduleStore = useScheduleStore();
 function addSpot(id: string) {
   const tripId = tripStore.trips[0]?.id || tripStore.createTrip();
-  dayPlanStore.addSpot(tripId, id, 1);
+  const entry = scheduleStore.enqueue(tripId, 1, id);
+  if (!entry) return;
+  const proposal = scheduleStore.evaluate(entry);
+  if (proposal && !proposal.feasible) {
+    toast.warn(`${messages.spotQueuedBlocked}：${proposal.issues[0]?.message || ''}`);
+  } else {
+    toast.ok(proposal ? `${messages.spotQueued}（可排 ${proposal.start_time}-${proposal.end_time}）` : messages.spotQueued);
+  }
 }
 </script>
-
